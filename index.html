@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Guivens Bot — Konekte WhatsApp ou</title>
+<style>
+  :root {
+    --green: #25D366;
+    --dark: #111b21;
+    --panel: #1f2c33;
+    --text: #e9edef;
+    --muted: #8696a0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 480px; width: 100%; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  p.sub { color: var(--muted); margin-top: 0; margin-bottom: 24px; }
+  .card {
+    background: var(--panel);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  label { font-size: 14px; color: var(--muted); display: block; margin-bottom: 6px; }
+  input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #2a3942;
+    background: #2a3942;
+    color: var(--text);
+    font-size: 16px;
+    outline: none;
+  }
+  input::placeholder { color: #6b7c85; }
+  button {
+    width: 100%;
+    margin-top: 14px;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    background: var(--green);
+    color: #05210f;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  button:disabled { opacity: 0.6; cursor: default; }
+  .kòd-bwat {
+    text-align: center;
+    margin-top: 18px;
+  }
+  .kòd {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: 6px;
+    color: var(--green);
+    padding: 14px;
+    border: 2px dashed var(--green);
+    border-radius: 12px;
+    margin-top: 8px;
+  }
+  ol { padding-left: 20px; margin: 0; }
+  ol li { margin-bottom: 14px; line-height: 1.4; }
+  .badge {
+    display: inline-block;
+    background: #2a3942;
+    color: var(--green);
+    font-weight: 700;
+    border-radius: 6px;
+    padding: 1px 7px;
+    font-size: 13px;
+    margin-right: 6px;
+  }
+  .estati {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .pwen {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #8696a0;
+  }
+  .pwen.konekte { background: var(--green); }
+  .pwen.ap-konekte { background: #ffc107; }
+  small.avètisman { color: var(--muted); display: block; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1><span id="ikonBot">🤖</span> Guivens Bot</h1>
+  <p class="sub">Konekte nimewo WhatsApp ou pou l kòmanse reponn mesaj yo otomatikman.</p>
+
+  <div class="card">
+    <label for="nimewo">Nimewo WhatsApp ou (ak kòd peyi, san "+")</label>
+    <input id="nimewo" type="tel" placeholder="Egzanp: 50912345678" />
+    <button id="btnKonekte">Jenere kòd la</button>
+
+    <div class="kòd-bwat" id="kòdBwat" style="display:none">
+      <label>Kòd konfimasyon an</label>
+      <div class="kòd" id="kòdTèks">— — — —</div>
+    </div>
+
+    <div class="estati" style="margin-top:16px">
+      <span class="pwen" id="pwenEstati"></span>
+      <span id="tèksEstati">Poko konekte</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <strong>Kijan pou antre kòd la nan WhatsApp:</strong>
+    <ol>
+      <li><span class="badge">1</span>Louvri WhatsApp, peze twa ti pwen an (⋮) anlè adwat, epi chwazi <b>Appareils connectés</b>.</li>
+      <li><span class="badge">2</span>Peze bouton vèt <b>Connecter un appareil</b>.</li>
+      <li><span class="badge">3</span>Nan paj "Scanner le code QR" la, peze <b>Connecter avec un numéro de téléphone</b> anba nèt.</li>
+      <li><span class="badge">4</span>Antre 8 chif/lèt kòd ki parèt anwo a nan ekran "Saisir le code" la.</li>
+    </ol>
+    <small class="avètisman">⚠️ Pa janm antre yon kòd yon lòt moun voye ba ou — se sèlman kòd OU jenere pou pwòp nimewo pa w la pou ou antre.</small>
+  </div>
+</div>
+
+<script>
+  // Si paj la sou Cloudflare Pages, mete adrès sèvè bòt la isit la (egz: "https://guivens-bot.onrender.com").
+  // Si paj la sèvi pa sèvè a menm, kite l vid: "".
+  window.API_URL = "";
+</script>
+<script>
+  const btn = document.getElementById("btnKonekte");
+  const inputNimewo = document.getElementById("nimewo");
+  const kòdBwat = document.getElementById("kòdBwat");
+  const kòdTèks = document.getElementById("kòdTèks");
+  const pwenEstati = document.getElementById("pwenEstati");
+  const tèksEstati = document.getElementById("tèksEstati");
+
+  async function jenereKòd() {
+    const nimewo = inputNimewo.value.trim();
+    if (!nimewo) return alert("Tanpri antre nimewo WhatsApp ou.");
+
+    btn.disabled = true;
+    btn.textContent = "Ap jenere...";
+
+    try {
+      const rep = await fetch((window.API_URL || "") + "/api/konekte", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nimewo }),
+      });
+      const data = await rep.json();
+
+      if (data.kòd) {
+        kòdTèks.textContent = data.kòd;
+        kòdBwat.style.display = "block";
+      } else {
+        alert(data.erè || "Yon erè pase.");
+      }
+    } catch (e) {
+      alert("Pa t kapab kontakte sèvè a.");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Jenere kòd la";
+    }
+  }
+
+  btn.addEventListener("click", jenereKòd);
+
+  async function rafrechiEstati() {
+    try {
+      const n = inputNimewo.value.replace(/\D/g, "");
+      if (!n) return;
+      const rep = await fetch((window.API_URL || "") + "/api/estati?nimewo=" + n);
+      const data = await rep.json();
+      pwenEstati.className = "pwen " + data.estati;
+      tèksEstati.textContent =
+        data.estati === "konekte"
+          ? "✅ Konekte ak WhatsApp"
+          : data.estati === "ap-konekte"
+          ? "⏳ N ap tann ou antre kòd la..."
+          : "Poko konekte";
+    } catch (e) {}
+  }
+
+  setInterval(rafrechiEstati, 3000);
+  rafrechiEstati();
+</script>
+<script src="/admin.js"></script>
+</body>
+</html>
